@@ -1,0 +1,14 @@
+service: example-service
+ 
+provider:
+  name: aws
+  ecr:
+    # Images that will be built locally and uploaded to ECR
+    images:
+      testimage:
+        path: ./
+ 
+functions:
+  my_first_function:
+    image:
+      name: testimage
