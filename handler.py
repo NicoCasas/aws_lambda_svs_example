@@ -24,7 +24,7 @@ def get_welcome_msg(event):
     name = body['name']
     
     # Verify if the name contains only alphabetical values
-    if re.match(r'^[a-zA-Z]+$', name) is None:
+    if not isinstance(name, str) or re.match(r'^[a-zA-Z]+$', name) is None:
         return InvalidBodyError
 
     welcome_message = 'hola ' + name
