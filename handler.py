@@ -2,25 +2,27 @@ import json
 import re
 from scrapper import get_top_n_majors_three_pointers_nba
 
+InvalidBodyError = {
+    'statusCode': 400,
+    'body': {
+        'error': 'Invalid body'
+    }
+}
+
 def get_welcome_msg(event):
     # Extract the string from the request body
-    if not event['body'] or not event['body']['name']:
-        return {
-            'statusCode': 400,
-            'body':{
-                'error': 'Invalid body'
-            }
-        }
-    name = event['body']['name']
+    if not event.get('body'):
+        return  InvalidBodyError
+     
+    body = json.loads(event['body'])
+    if not body.get('name'):
+        return InvalidBodyError
+    
+    name = body['name']
     
     # Verify if the name contains only alphabetical values
     if not re.match(r'^[a-zA-Z]+$', name):
-        return {
-            'statusCode': 400,
-            'body': {
-                'error': 'Invalid name. Only alphabetical values are allowed.'
-            }
-        }
+        return InvalidBodyError
 
     welcome_message = 'hola ' + name
     
@@ -40,6 +42,7 @@ def get_scorers():
 
 
 def lambda_handler(event, context):
+    print(event)
     if not event['httpMethod']:
         return {
             'statusCode': 400,
