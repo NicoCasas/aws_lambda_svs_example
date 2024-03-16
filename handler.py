@@ -4,24 +4,27 @@ from scrapper import get_top_n_majors_three_pointers_nba
 
 InvalidBodyError = {
     'statusCode': 400,
-    'body': {
+    'body': json.dumps({
         'error': 'Invalid body'
-    }
+    })
 }
 
 def get_welcome_msg(event):
     # Extract the string from the request body
     if not event.get('body'):
         return  InvalidBodyError
-     
-    body = json.loads(event['body'])
-    if not body.get('name'):
+    
+    try:
+        body = json.loads(event['body'])
+    except:
         return InvalidBodyError
     
+    if not body.get('name'):
+        return InvalidBodyError
     name = body['name']
     
     # Verify if the name contains only alphabetical values
-    if not re.match(r'^[a-zA-Z]+$', name):
+    if re.match(r'^[a-zA-Z]+$', name) is None:
         return InvalidBodyError
 
     welcome_message = 'hola ' + name
@@ -31,7 +34,6 @@ def get_welcome_msg(event):
         'statusCode': 200,
         'body': json.dumps({'message': welcome_message})
     }
-
 
 def get_scorers():
     top_scorers = get_top_n_majors_three_pointers_nba(5)
@@ -45,7 +47,9 @@ def lambda_handler(event, context):
     if not event['httpMethod']:
         return {
             'statusCode': 400,
-            'error': 'Bad Request'
+            'body': json.dumps({
+                'error': 'Bad Request'
+            })
         }
     
     http_method = event['httpMethod']
@@ -53,7 +57,9 @@ def lambda_handler(event, context):
     if http_method not in ['GET', 'POST']:
         return {
             'statusCode': 405,
-            'body': 'Method Not Allowed'
+            'body': json.dumps({
+                'error': 'Method Not Allowed'
+            })
         }
     
     if http_method == 'GET':
