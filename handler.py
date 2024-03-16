@@ -40,8 +40,6 @@ def get_scorers():
 
 
 def lambda_handler(event, context):
-    print(f'event -> {event}')
-    
     if not event['httpMethod']:
         return {
             'statusCode': 400,
